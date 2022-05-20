@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  icq:
+    # image: stridezone:interchain-queries:latest
+    image: stridezone:interchain-queries
+    hostname: stride
+    volumes:
+      # - ./data/icq:/icq/.icq
+      # - ./state/STRIDE_1:/stride/.strided
+      - ./state/icq:/icq/.icq
+    command:
+      - interchain-queries
+      - run
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
