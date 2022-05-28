@@ -1,14 +1,14 @@
-default_chain: quicksilver
+default_chain: stride
 chains:
-  quicksilver:
+  stride:
     key: test
-    chain-id: test-1
+    chain-id: STRIDE_1
     rpc-addr: http://stride1:26657
     grpc-addr: http://stride1:9090
-    account-prefix: quick
+    account-prefix: stride
     keyring-backend: test
-    gas-adjustment: 1.2
-    gas-prices: 0.00uqck
+    gas-adjustment: 0.1
+    gas-prices: 0.00ustrd
     key-directory: /root/.icq/keys
     debug: false
     timeout: 20s
@@ -16,12 +16,12 @@ chains:
     sign-mode: direct
   liquidstaking:
     key: test
-    chain-id: test-2
-    rpc-addr: http://stride2:26657
-    grpc-addr: http://stride2:9090
+    chain-id: GAIA_1
+    rpc-addr: http://gaia1:26657
+    grpc-addr: http://gaia1:9090
     account-prefix: cosmos
     keyring-backend: test
-    gas-adjustment: 1.2
+    gas-adjustment: 0.1
     gas-prices: 0.00stake
     key-directory: /root/.icq/keys
     debug: false
