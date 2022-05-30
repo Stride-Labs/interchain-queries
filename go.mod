@@ -1,4 +1,4 @@
-module github.com/ingenuity-build/interchain-queries
+module github.com/Stride-Labs/interchain-queries
 
 go 1.17
 
