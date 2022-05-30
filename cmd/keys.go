@@ -67,7 +67,7 @@ $ %s k a osmo_key --chain osmosis`, appName, appName, appName)),
 				return errKeyExists(keyName)
 			}
 
-			ko, err := cl.AddKey(keyName, 118)
+			ko, err := cl.AddKey(keyName)
 			if err != nil {
 				return err
 			}
@@ -108,7 +108,7 @@ $ %s k r --chain ibc-1 faucet-key`, appName, appName)),
 			mnemonic, _ := terminal.ReadPassword(0)
 			fmt.Println()
 
-			address, err := cl.RestoreKey(keyName, string(mnemonic), 118)
+			address, err := cl.RestoreKey(keyName, string(mnemonic))
 			if err != nil {
 				return err
 			}
