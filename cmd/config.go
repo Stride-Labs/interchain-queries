@@ -6,9 +6,9 @@ import (
 	"os"
 	"path"
 
-	"github.com/Stride-Labs/interchain-queries/pkg/config"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/ingenuity-build/interchain-queries/pkg/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/strangelove-ventures/lens/client"
@@ -62,7 +62,7 @@ func initConfig(cmd *cobra.Command) error {
 	cfg.Cl = make(map[string]*client.ChainClient)
 	for name, chain := range cfg.Chains {
 		chain.Modules = append([]module.AppModuleBasic{}, ModuleBasics...)
-		cl, err := client.NewChainClient(chain, home, os.Stdin, os.Stdout)
+		cl, err := client.NewChainClient(nil, chain, home, os.Stdin, os.Stdout)
 		if err != nil {
 			fmt.Println("Error creating chain client:", err)
 			os.Exit(1)
