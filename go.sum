@@ -107,6 +107,8 @@ github.com/Shopify/toxiproxy v2.1.4+incompatible/go.mod h1:OXgGpZ6Cli1/URJOF1DMx
 github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
 github.com/Stride-Labs/lens v0.0.1 h1:8I1SGJrkopGjTmOYyWVpmrqqjGby+GKOZjMWoxWHK1c=
 github.com/Stride-Labs/lens v0.0.1/go.mod h1:K7tBlffrSq4Tm0SqYrTTCwbOvDRQeh7OBBGCa9YrpV8=
+github.com/Stride-Labs/lens v0.0.2 h1:L5GjKcBllD+LTUxeVgXDhbYvKqygp4+t/33e5g0sji4=
+github.com/Stride-Labs/lens v0.0.2/go.mod h1:K7tBlffrSq4Tm0SqYrTTCwbOvDRQeh7OBBGCa9YrpV8=
 github.com/VictoriaMetrics/fastcache v1.5.7/go.mod h1:ptDBkNMQI4RtmVo8VS/XwRY6RoTu1dAWCbrk+6WsEM8=
 github.com/VividCortex/gohistogram v1.0.0 h1:6+hBz+qvs0JOrrNhhmR7lFxo5sINxBCGXrdtl/UvroE=
 github.com/VividCortex/gohistogram v1.0.0/go.mod h1:Pf5mBqqDxYaXu3hDrrU+w6nw50o/4+TcAqDqk/vUH7g=
