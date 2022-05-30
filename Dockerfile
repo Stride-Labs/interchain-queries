@@ -6,8 +6,9 @@ COPY test test
 COPY ssh_config /root/.ssh/config
 ENV GIT_SSH_COMMAND="ssh -i /src/app/test -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 RUN chmod 0600 test
-RUN git config --global url."git@github.com:".insteadOf "https://github.com/"
+# RUN git config --global url."git@github.com:".insteadOf "https://github.com/" 
 RUN go env -w GOPRIVATE=github.com/ingenuity-build/*
+# RUN git clone https://github.com/ingenuity-build/quicksilver
 COPY go.mod go.mod
 COPY go.sum go.sum
 
