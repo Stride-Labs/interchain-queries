@@ -13,7 +13,9 @@ import (
 
 	"github.com/Stride-Labs/interchain-queries/pkg/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	qstypes "github.com/ingenuity-build/quicksilver/x/interchainquery/types"
+
+	// qstypes "github.com/ingenuity-build/quicksilver/x/interchainquery/types"
+	qstypes "github.com/Stride-Labs/interchain-queries/types"
 	lensclient "github.com/strangelove-ventures/lens/client"
 	lensquery "github.com/strangelove-ventures/lens/client/query"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
@@ -248,7 +250,7 @@ func doRequest(query Query) {
 
 	}
 
-	msg := &qstypes.MsgSubmitQueryResponse{ChainId: query.ChainId, QueryId: query.QueryId, Result: res.Value, Height: res.Height, ProofOps: res.ProofOps, FromAddress: submitClient.MustEncodeAccAddr(from)}
+	msg := &qstypes.MsgSubmitQueryResponse{ChainId: query.ChainId, QueryId: query.QueryId, Result: res.Value, Height: res.Height, FromAddress: submitClient.MustEncodeAccAddr(from)}
 	sendQueue[query.SourceChainId] <- msg
 }
 
