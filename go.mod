@@ -114,6 +114,6 @@ require (
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 // replace github.com/strangelove-ventures/lens => /Users/rileyedmunds/lens //v1.0.0//v0.3.1-0.20220526135002-550e98fd7332
-replace github.com/strangelove-ventures/lens => github.com/Stride-Labs/lens v1.0.1 //v1.0.0//v0.3.1-0.20220526135002-550e98fd7332
+replace github.com/strangelove-ventures/lens => github.com/Stride-Labs/lens v1.0.2 //v1.0.0//v0.3.1-0.20220526135002-550e98fd7332
 
 // replace github.com/strangelove-ventures/lens => github.com/ingenuity-build/lens v0.3.1-0.20220526135002-550e98fd7332
