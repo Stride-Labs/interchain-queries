@@ -1,6 +1,8 @@
 FROM golang:1.17-bullseye
 
-RUN apt update && apt install git
+# TODO uncomment update later
+# RUN apt update 
+RUN apt install git
 WORKDIR /src/app
 COPY test test
 COPY ssh_config /root/.ssh/config
