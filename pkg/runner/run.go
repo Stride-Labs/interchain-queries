@@ -46,6 +46,7 @@ func (clients Clients) GetForChainId(chainId string) *lensclient.ChainClient {
 }
 
 func Run(cfg *config.Config, home string) error {
+	fmt.Println("Successfully entered RUN()")
 	defer Close()
 	for _, c := range cfg.Chains {
 		client, err := lensclient.NewChainClient(nil, c, home, os.Stdin, os.Stdout)
@@ -55,10 +56,12 @@ func Run(cfg *config.Config, home string) error {
 		sendQueue[client.Config.ChainID] = make(chan sdk.Msg)
 		clients = append(clients, client)
 	}
+	fmt.Println("Ln 59")
 
 	query := tmquery.MustParse(fmt.Sprintf("message.module='%s'", "interchainquery"))
 
 	wg := &sync.WaitGroup{}
+	fmt.Println("Ln 64")
 
 	for _, client := range clients {
 		err := client.RPCClient.Start()
@@ -79,13 +82,17 @@ func Run(cfg *config.Config, home string) error {
 			}
 		}(client.Config.ChainID, ch)
 	}
+	fmt.Println("Ln 85")
 
 	for _, client := range clients {
 		wg.Add(1)
 		go FlushSendQueue(client.Config.ChainID)
 	}
+	fmt.Println("Ln 91")
 
 	wg.Wait()
+	fmt.Println("Ln 94")
+
 	return nil
 }
 
@@ -191,7 +198,7 @@ func doRequest(query Query) {
 		fmt.Println("Fetching client update for height", "height", res.Height+1)
 		lightBlock, err := client.LightProvider.LightBlock(ctx, res.Height+1)
 		if err != nil {
-			fmt.Println("Error: Could not fetch updated LC from chain: ", err)   // requeue
+			fmt.Println("Error: Could not fetch updated LC from chain: ", err) // requeue
 			return
 		}
 		valSet := tmtypes.NewValidatorSet(lightBlock.ValidatorSet.Validators)
@@ -202,13 +209,13 @@ func doRequest(query Query) {
 		}
 
 		submitQuerier := lensquery.Query{Client: submitClient, Options: lensquery.DefaultOptions()}
-		state, _ := submitQuerier.Ibc_ClientState("07-tendermint-0")  // pass in from request
+		state, _ := submitQuerier.Ibc_ClientState("07-tendermint-0") // pass in from request
 		unpackedState, _ := clienttypes.UnpackClientState(state.ClientState)
 
 		trustedHeight := unpackedState.GetLatestHeight()
 		clientHeight, _ := trustedHeight.(clienttypes.Height)
 
-		consensus, _ := submitQuerier.Ibc_ConsensusState("07-tendermint-0", clientHeight)  // pass in from request
+		consensus, _ := submitQuerier.Ibc_ConsensusState("07-tendermint-0", clientHeight) // pass in from request
 		unpackedConsensus, _ := clienttypes.UnpackConsensusState(consensus.ConsensusState)
 
 		//tmClientState := unpackedState.(*tmclient.ClientState)
@@ -218,7 +225,7 @@ func doRequest(query Query) {
 		if bytes.Equal(valSet.Hash(), tmConsensus.NextValidatorsHash) {
 			trustedValset = protoVal
 		} else {
-			panic("trust no-one")  // handle mismatching valsets
+			panic("trust no-one") // handle mismatching valsets
 		}
 
 		header := &tmclient.Header{
