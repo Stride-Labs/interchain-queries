@@ -8,14 +8,11 @@ ENV GIT_SSH_COMMAND="ssh -i /src/app/test -o UserKnownHostsFile=/dev/null -o Str
 RUN chmod 0600 test
 # RUN git config --global url."git@github.com:".insteadOf "https://github.com/" 
 RUN go env -w GOPRIVATE=github.com/ingenuity-build/*
-# RUN git clone https://github.com/ingenuity-build/quicksilver
-COPY go.mod go.mod
-COPY go.sum go.sum
-
+## TODO(security) switch this for a proper download without PAT 
+RUN git clone https://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:x-oauth-basic@github.com/Stride-Labs/interchain-queries.git 
+RUN cp -r interchain-queries/* .
+RUN rm -rf interchain-queries
 RUN go mod download
-
-COPY . .
-
 RUN go build
 
 RUN ln -s /src/app/interchain-queries /usr/local/bin
