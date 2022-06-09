@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	interchainquery "github.com/Stride-Labs/stride/x/interchainquery"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authz "github.com/cosmos/cosmos-sdk/x/authz/module"
@@ -20,7 +21,6 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	"github.com/cosmos/ibc-go/v3/modules/apps/transfer"
 	ibc "github.com/cosmos/ibc-go/v3/modules/core"
-	interchainquery "github.com/ingenuity-build/quicksilver/x/interchainquery"
 )
 
 // TODO: Import a bunch of custom modules like cosmwasm and osmosis
