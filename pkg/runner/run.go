@@ -108,6 +108,7 @@ func handleEvent(event coretypes.ResultEvent) {
 	types := event.Events["message.type"]
 	request := event.Events["message.request"]
 	height := event.Events["message.height"]
+	fmt.Println("ICQ MOOSE heightsarr: ", height)
 
 	items := len(queryIds)
 
@@ -116,10 +117,12 @@ func handleEvent(event coretypes.ResultEvent) {
 		if err != nil {
 			panic(err)
 		}
+		fmt.Println("ICQ MOOSE height[i]: ", height[i])
 		h, err := strconv.ParseInt(height[i], 10, 64)
 		if err != nil {
 			panic(err)
 		}
+		fmt.Println("ICQ MOOSE h: ", h)
 		queries = append(queries, Query{source[0], connections[i], chains[i], queryIds[i], types[i], h, req})
 	}
 
