@@ -25,6 +25,8 @@ import (
 	tmclient "github.com/cosmos/ibc-go/v3/modules/light-clients/07-tendermint/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtypes "github.com/tendermint/tendermint/types"
+
+	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 )
 
 type Clients []*lensclient.ChainClient
@@ -108,7 +110,6 @@ func handleEvent(event coretypes.ResultEvent) {
 	types := event.Events["message.type"]
 	request := event.Events["message.request"]
 	height := event.Events["message.height"]
-	fmt.Println("ICQ MOOSE heightsarr: ", height)
 
 	items := len(queryIds)
 
@@ -117,12 +118,10 @@ func handleEvent(event coretypes.ResultEvent) {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("ICQ MOOSE height[i]: ", height[i])
 		h, err := strconv.ParseInt(height[i], 10, 64)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("ICQ MOOSE h: ", h)
 		queries = append(queries, Query{source[0], connections[i], chains[i], queryIds[i], types[i], h, req})
 	}
 
@@ -147,16 +146,20 @@ func RunGRPCQuery(ctx context.Context, client *lensclient.ChainClient, method st
 		Path:   method,
 		Data:   reqBz,
 		Height: height,
-		Prove:  prove,
+		// Prove:  prove,
+		// TODO(TEST-119) un hardcode
+		Prove: true,
 	}
 
 	//fmt.Println("query", "query", abciReq)
 
-	abciRes, err := client.QueryABCI(ctx, abciReq)
+	abciRes, err := client.QueryABCI(ctx, abciReq) //storekey in abcireq
 	//fmt.Println(abciRes)
 	if err != nil {
 		return abcitypes.ResponseQuery{}, nil, err
 	}
+
+	fmt.Println("abciRes.ProofOps: ", abciRes.ProofOps)
 
 	return abciRes, md, nil
 }
@@ -171,7 +174,7 @@ func doRequest(query Query) {
 	newCtx := lensclient.SetHeightOnContext(ctx, query.Height)
 	pathParts := strings.Split(query.Type, "/")
 	if pathParts[len(pathParts)-1] == "key" { // fetch proof if the query is 'key'
-		newCtx = lensclient.SetProveOnContext(newCtx, true)
+		newCtx = lensclient.SetProveOnContext(newCtx, true) // storekey
 	}
 	inMd, ok := metadata.FromOutgoingContext(newCtx)
 	fmt.Println("ctx", "ctx", ctx, "md", inMd)
@@ -187,7 +190,9 @@ func doRequest(query Query) {
 	// submit tx to queue
 	submitClient := clients.GetForChainId(query.SourceChainId)
 	from, _ := submitClient.GetKeyAddress()
-	fmt.Println("Result received", "result", res.Value, "proof", res.ProofOps)
+	fmt.Println("Result received:", "result", res.Value, "proof", res.ProofOps)
+	var simRes txtypes.SimulateResponse
+	fmt.Println("Result received:", "result (unmarshalled)", simRes.Unmarshal(res.Value), "proof", res.ProofOps)
 
 	if pathParts[len(pathParts)-1] == "key" {
 		// update client
@@ -287,6 +292,7 @@ func flush(chainId string, toSend []sdk.Msg) {
 				//if err.Error() == "transaction failed with code: 19" {
 				fmt.Println("Tx in mempool")
 			} else {
+
 				panic(err)
 			}
 		}
