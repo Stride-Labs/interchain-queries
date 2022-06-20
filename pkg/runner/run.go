@@ -137,10 +137,10 @@ func RunGRPCQuery(ctx context.Context, client *lensclient.ChainClient, method st
 		return abcitypes.ResponseQuery{}, nil, err
 	}
 
-	prove, err := lensclient.GetProveFromMetadata(md)
-	if err != nil {
-		return abcitypes.ResponseQuery{}, nil, err
-	}
+	// prove, err := lensclient.GetProveFromMetadata(md)
+	// if err != nil {
+	// 	return abcitypes.ResponseQuery{}, nil, err
+	// }
 
 	abciReq := abcitypes.RequestQuery{
 		Path:   method,
