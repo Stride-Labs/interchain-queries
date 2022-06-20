@@ -147,16 +147,20 @@ func RunGRPCQuery(ctx context.Context, client *lensclient.ChainClient, method st
 		Path:   method,
 		Data:   reqBz,
 		Height: height,
-		Prove:  prove,
+		// Prove:  prove,
+		// TODO(TEST-119) un hardcode
+		Prove: true,
 	}
 
 	//fmt.Println("query", "query", abciReq)
 
-	abciRes, err := client.QueryABCI(ctx, abciReq)
+	abciRes, err := client.QueryABCI(ctx, abciReq) //storekey in abcireq
 	//fmt.Println(abciRes)
 	if err != nil {
 		return abcitypes.ResponseQuery{}, nil, err
 	}
+
+	fmt.Println("abciRes.ProofOps: ", abciRes.ProofOps)
 
 	return abciRes, md, nil
 }
@@ -171,7 +175,7 @@ func doRequest(query Query) {
 	newCtx := lensclient.SetHeightOnContext(ctx, query.Height)
 	pathParts := strings.Split(query.Type, "/")
 	if pathParts[len(pathParts)-1] == "key" { // fetch proof if the query is 'key'
-		newCtx = lensclient.SetProveOnContext(newCtx, true)
+		newCtx = lensclient.SetProveOnContext(newCtx, true) // storekey
 	}
 	inMd, ok := metadata.FromOutgoingContext(newCtx)
 	fmt.Println("ctx", "ctx", ctx, "md", inMd)
@@ -287,6 +291,7 @@ func flush(chainId string, toSend []sdk.Msg) {
 				//if err.Error() == "transaction failed with code: 19" {
 				fmt.Println("Tx in mempool")
 			} else {
+
 				panic(err)
 			}
 		}
