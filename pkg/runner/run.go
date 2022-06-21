@@ -15,18 +15,13 @@ import (
 	qstypes "github.com/Stride-Labs/stride/x/interchainquery/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	lensclient "github.com/strangelove-ventures/lens/client"
-	lensquery "github.com/strangelove-ventures/lens/client/query"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	tmquery "github.com/tendermint/tendermint/libs/pubsub/query"
 	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 	"google.golang.org/grpc/metadata"
 
 	clienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	tmclient "github.com/cosmos/ibc-go/v3/modules/light-clients/07-tendermint/types"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtypes "github.com/tendermint/tendermint/types"
-
-	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 )
 
 type Clients []*lensclient.ChainClient
@@ -210,8 +205,6 @@ func doRequest(query Query) {
 	submitClient := clients.GetForChainId(query.SourceChainId)
 	from, _ := submitClient.GetKeyAddress()
 	fmt.Println("Result received:", "result", res.Value, "proof", res.ProofOps)
-	var simRes txtypes.SimulateResponse
-	fmt.Println("Result received:", "result (unmarshalled)", simRes.Unmarshal(res.Value), "proof", res.ProofOps)
 
 	if pathParts[len(pathParts)-1] == "key" {
 		// update client
@@ -221,12 +214,16 @@ func doRequest(query Query) {
 			fmt.Println("Error: Could not fetch updated LC from chain - bailing: ", err) // requeue
 			return
 		}
+		fmt.Println("GOT LIGHT BLOCK")
+
 		valSet := tmtypes.NewValidatorSet(lightBlock.ValidatorSet.Validators)
+		fmt.Println("tmtypes.NewValidatorSet(lightBlock.ValidatorSet.Validators); first val:  ", valSet.Validators[0].String()) // requeue
 		protoVal, err := valSet.ToProto()
 		if err != nil {
 			fmt.Println("Error: Could not get valset from chain: ", err)
 			return
 		}
+		fmt.Println("GOT PROTOVAL")
 
 		submitQuerier := lensquery.Query{Client: submitClient, Options: lensquery.DefaultOptions()}
 		connection, err := submitQuerier.Ibc_Connection(query.ConnectionId)
@@ -234,6 +231,7 @@ func doRequest(query Query) {
 			fmt.Println("Error: Could not get connection from chain: ", err)
 			return
 		}
+		fmt.Println("submitQuerier.Ibc_Connection(query.ConnectionId)")
 
 		clientId := connection.Connection.ClientId
 		state, err := submitQuerier.Ibc_ClientState(clientId) // pass in from request
@@ -241,6 +239,8 @@ func doRequest(query Query) {
 			fmt.Println("Error: Could not get state from chain: ", err)
 			return
 		}
+		fmt.Println("submitQuerier.Ibc_ClientState(clientId)")
+
 		unpackedState, err := clienttypes.UnpackClientState(state.ClientState)
 		if err != nil {
 			fmt.Println("Error: Could not unpack state from chain: ", err)
@@ -341,6 +341,7 @@ func flush(chainId string, toSend []sdk.Msg) {
 		}
 		// dedupe on queryId
 		msgs := unique(toSend)
+		fmt.Printf("Sending mesage: ", msgs[0].String())
 		resp, err := client.SendMsgs(context.Background(), msgs)
 		if err != nil {
 			if resp != nil && resp.Code == 19 && resp.Codespace == "sdk" {
@@ -363,10 +364,17 @@ func unique(msgSlice []sdk.Msg) []sdk.Msg {
 
 	list := []sdk.Msg{}
 	for _, entry := range msgSlice {
+		fmt.Printf("Entry: ", entry.String())
+		fmt.Printf("A")
 		msg, ok := entry.(*clienttypes.MsgUpdateClient)
+		fmt.Printf("B")
+
 		if ok {
+			fmt.Printf("Unpacking header")
 			header, _ := clienttypes.UnpackHeader(msg.Header)
+			fmt.Printf("Unpacked header")
 			key := header.GetHeight().String()
+			fmt.Printf("Got height")
 			if _, value := clientUpdateHeights[key]; !value {
 				clientUpdateHeights[key] = true
 				list = append(list, entry)
@@ -374,7 +382,9 @@ func unique(msgSlice []sdk.Msg) []sdk.Msg {
 			}
 			continue
 		}
+		fmt.Printf("C")
 		msg2, ok2 := entry.(*qstypes.MsgSubmitQueryResponse)
+		fmt.Printf("D")
 		if ok2 {
 			if _, value := keys[msg2.QueryId]; !value {
 				keys[msg2.QueryId] = true
