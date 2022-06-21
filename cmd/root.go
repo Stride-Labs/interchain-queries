@@ -3,7 +3,7 @@ package cmd
 import (
 	"os"
 
-	"github.com/Stride-Labs/icq/pkg/config"
+	"github.com/Stride-Labs/interchain-queries/pkg/config"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

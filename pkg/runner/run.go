@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Stride-Labs/icq/pkg/config"
+	"github.com/Stride-Labs/interchain-queries/pkg/config"
 	qstypes "github.com/Stride-Labs/stride/x/interchainquery/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	lensclient "github.com/strangelove-ventures/lens/client"

@@ -1,4 +1,4 @@
-module github.com/Stride-Labs/icq
+module github.com/Stride-Labs/interchain-queries
 
 go 1.17
 

@@ -5,7 +5,7 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"github.com/Stride-Labs/icq/pkg/runner"
+	"github.com/Stride-Labs/interchain-queries/pkg/runner"
 	"github.com/spf13/cobra"
 )
 
