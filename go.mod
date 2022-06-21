@@ -3,7 +3,7 @@ module github.com/Stride-Labs/interchain-queries
 go 1.17
 
 require (
-	github.com/Stride-Labs/stride v0.0.5
+	github.com/Stride-Labs/stride v0.0.6
 	github.com/cosmos/cosmos-sdk v0.45.4
 	github.com/cosmos/ibc-go/v3 v3.0.0
 	github.com/spf13/cobra v1.4.0
