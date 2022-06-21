@@ -32,7 +32,7 @@ import (
 type Clients []*lensclient.ChainClient
 
 var (
-	WaitInterval = time.Second * 2
+	WaitInterval = time.Second * 3
 	clients      = Clients{}
 	ctx          = context.Background()
 	sendQueue    = map[string]chan sdk.Msg{}
@@ -164,6 +164,25 @@ func RunGRPCQuery(ctx context.Context, client *lensclient.ChainClient, method st
 	return abciRes, md, nil
 }
 
+func retryLightblock(ctx context.Context, client *lensclient.ChainClient, height int64, maxTime int) (*tmtypes.LightBlock, error) {
+	interval := 1
+	lightBlock, err := client.LightProvider.LightBlock(ctx, height)
+	if err != nil {
+		for {
+			time.Sleep(time.Duration(interval) * time.Second)
+			fmt.Println("Requerying lightblock")
+			lightBlock, err = client.LightProvider.LightBlock(ctx, height)
+			interval = interval + 1
+			if err == nil {
+				break
+			} else if interval > maxTime {
+				return nil, fmt.Errorf("unable to query light block, max interval exceeded")
+			}
+		}
+	}
+	return lightBlock, err
+}
+
 func doRequest(query Query) {
 	client := clients.GetForChainId(query.ChainId)
 	if client == nil {
@@ -197,9 +216,9 @@ func doRequest(query Query) {
 	if pathParts[len(pathParts)-1] == "key" {
 		// update client
 		fmt.Println("Fetching client update for height", "height", res.Height+1)
-		lightBlock, err := client.LightProvider.LightBlock(ctx, res.Height+1)
+		lightBlock, err := retryLightblock(ctx, client, res.Height+1, 5)
 		if err != nil {
-			fmt.Println("Error: Could not fetch updated LC from chain: ", err) // requeue
+			fmt.Println("Error: Could not fetch updated LC from chain - bailing: ", err) // requeue
 			return
 		}
 		valSet := tmtypes.NewValidatorSet(lightBlock.ValidatorSet.Validators)
@@ -210,23 +229,59 @@ func doRequest(query Query) {
 		}
 
 		submitQuerier := lensquery.Query{Client: submitClient, Options: lensquery.DefaultOptions()}
-		state, _ := submitQuerier.Ibc_ClientState("07-tendermint-0") // pass in from request
-		unpackedState, _ := clienttypes.UnpackClientState(state.ClientState)
+		connection, err := submitQuerier.Ibc_Connection(query.ConnectionId)
+		if err != nil {
+			fmt.Println("Error: Could not get connection from chain: ", err)
+			return
+		}
+
+		clientId := connection.Connection.ClientId
+		state, err := submitQuerier.Ibc_ClientState(clientId) // pass in from request
+		if err != nil {
+			fmt.Println("Error: Could not get state from chain: ", err)
+			return
+		}
+		unpackedState, err := clienttypes.UnpackClientState(state.ClientState)
+		if err != nil {
+			fmt.Println("Error: Could not unpack state from chain: ", err)
+			return
+		}
 
 		trustedHeight := unpackedState.GetLatestHeight()
-		clientHeight, _ := trustedHeight.(clienttypes.Height)
+		clientHeight, ok := trustedHeight.(clienttypes.Height)
+		if !ok {
+			fmt.Println("Error: Could coerce trusted height")
+			return
+		}
 
-		consensus, _ := submitQuerier.Ibc_ConsensusState("07-tendermint-0", clientHeight) // pass in from request
-		unpackedConsensus, _ := clienttypes.UnpackConsensusState(consensus.ConsensusState)
-
-		//tmClientState := unpackedState.(*tmclient.ClientState)
+		consensus, err := submitQuerier.Ibc_ConsensusState(clientId, clientHeight) // pass in from request
+		if err != nil {
+			fmt.Println("Error: Could not get consensus state from chain: ", err)
+			return
+		}
+		unpackedConsensus, err := clienttypes.UnpackConsensusState(consensus.ConsensusState)
+		if err != nil {
+			fmt.Println("Error: Could not unpack consensus state from chain: ", err)
+			return
+		}
 		tmConsensus := unpackedConsensus.(*tmclient.ConsensusState)
 
 		var trustedValset *tmproto.ValidatorSet
 		if bytes.Equal(valSet.Hash(), tmConsensus.NextValidatorsHash) {
 			trustedValset = protoVal
 		} else {
-			panic("trust no-one") // handle mismatching valsets
+			fmt.Println("Fetching client update for height", "height", res.Height+1)
+			lightBlock2, err := retryLightblock(ctx, client, int64(clientHeight.RevisionHeight), 5)
+			if err != nil {
+				fmt.Println("Error: Could not fetch updated LC2 from chain - bailing: ", err) // requeue
+				return
+			}
+			valSet := tmtypes.NewValidatorSet(lightBlock2.ValidatorSet.Validators)
+			trustedValset, err = valSet.ToProto()
+			if err != nil {
+				fmt.Println("Error: Could not get valset2 from chain: ", err)
+				return
+			}
 		}
 
 		header := &tmclient.Header{
@@ -243,7 +298,7 @@ func doRequest(query Query) {
 		}
 
 		msg := &clienttypes.MsgUpdateClient{
-			ClientId: "07-tendermint-0", // needs to be passed in as part of request.
+			ClientId: clientId, // needs to be passed in as part of request.
 			Header:   anyHeader,
 			Signer:   submitClient.MustEncodeAccAddr(from),
 		}
