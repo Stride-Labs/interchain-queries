@@ -307,7 +307,7 @@ func doRequest(query Query) {
 
 	}
 
-	msg := &qstypes.MsgSubmitQueryResponse{ChainId: query.ChainId, QueryId: query.QueryId, Result: res.Value, ProofOps: res.ProofOps, Height: query.Height, FromAddress: submitClient.MustEncodeAccAddr(from)}
+	msg := &qstypes.MsgSubmitQueryResponse{ChainId: query.ChainId, QueryId: query.QueryId, Result: res.Value, ProofOps: res.ProofOps, Height: res.Height, FromAddress: submitClient.MustEncodeAccAddr(from)}
 	sendQueue[query.SourceChainId] <- msg
 }
 
