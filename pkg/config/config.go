@@ -12,7 +12,7 @@ import (
 )
 
 //createConfig idempotently creates the config.
-func CreateConfig(home string, debug bool) error {
+func CreateConfig(home string, debug bool, localMode bool) error {
 	cfgPath := path.Join(home, "config.yaml")
 
 	// If the config doesn't exist...
@@ -35,7 +35,7 @@ func CreateConfig(home string, debug bool) error {
 	defer f.Close()
 
 	// And write the default config to that location...
-	if _, err = f.Write(defaultConfig(path.Join(home, "keys"), debug)); err != nil {
+	if _, err = f.Write(defaultConfig(path.Join(home, "keys"), debug, localMode)); err != nil {
 		return err
 	}
 	return nil
@@ -98,12 +98,26 @@ func (c Config) MustYAML() []byte {
 	return out
 }
 
-func defaultConfig(keyHome string, debug bool) []byte {
-	return Config{
-		DefaultChain: "stride-testnet",
-		Chains: map[string]*client.ChainClientConfig{
+func defaultConfig(keyHome string, debug bool, localMode bool) []byte {
+	var defaultChain string
+	var chains map[string]*client.ChainClientConfig
+
+	if localMode {
+		defaultChain = "stride-local"
+		chains = map[string]*client.ChainClientConfig{
+			"stride-local": client.GetStrideLocalConfig(keyHome, debug),
+			"gaia-local":   client.GetGaiaLocalConfig(keyHome, debug),
+		}
+	} else {
+		defaultChain = "gaia-local"
+		chains = map[string]*client.ChainClientConfig{
 			"stride-testnet": client.GetStrideTestnetConfig(keyHome, debug),
 			"gaia-testnet":   client.GetGaiaTestnetConfig(keyHome, debug),
-		},
+		}
+	}
+
+	return Config{
+		DefaultChain: defaultChain,
+		Chains:       chains,
 	}.MustYAML()
 }
