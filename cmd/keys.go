@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"sort"
 	"strings"
 
@@ -85,15 +87,14 @@ $ %s k a osmo_key --chain osmosis`, appName, appName, appName)),
 	return cmd
 }
 
-// keysRestoreCmd respresents the `keys add` command
 func keysRestoreCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "restore [name] [mnemonic]",
+		Use:     "restore [name]",
 		Aliases: []string{"r"},
 		Short:   "restores a mnemonic to the keychain associated with a particular chain",
-		Args:    cobra.ExactArgs(2),
+		Args:    cobra.ExactArgs(1),
 		Example: strings.TrimSpace(fmt.Sprintf(`
-$ %s keys restore --chain ibc-0 testkey "helmet say goat special plug umbrella finger night flip axis resource tuna trigger angry shove essay point laundry horror eager forget depend siren alarm"
+$ %s keys restore --chain ibc-0 testkey
 $ %s k r --chain ibc-1 faucet-key`, appName, appName)),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cl := cfg.GetDefaultClient()
@@ -102,10 +103,11 @@ $ %s k r --chain ibc-1 faucet-key`, appName, appName)),
 				return errKeyExists(keyName)
 			}
 
-			// fmt.Print("Enter mnemonic 🔑: ")
-			// mnemonic, _ := terminal.ReadPassword(0)
-			mnemonic := args[1]
-			// fmt.Println(mnemonic)
+			fmt.Print("Enter mnemonic 🔑: ")
+			reader := bufio.NewReader(os.Stdin)
+			mnemonic, _ := reader.ReadString('\n')
+			mnemonic = strings.Replace(mnemonic, "\n", "", -1)
+			fmt.Println()
 
 			address, err := cl.RestoreKey(keyName, string(mnemonic), 118)
 			if err != nil {
