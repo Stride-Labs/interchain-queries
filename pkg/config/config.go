@@ -100,7 +100,7 @@ func (c Config) MustYAML() []byte {
 
 func defaultConfig(keyHome string, debug bool) []byte {
 	return Config{
-		DefaultChain: "cosmoshub",
+		DefaultChain: "stride-testnet",
 		Chains: map[string]*client.ChainClientConfig{
 			"stride-testnet": client.GetStrideTestnetConfig(keyHome, debug),
 			"gaia-testnet":   client.GetGaiaTestnetConfig(keyHome, debug),
