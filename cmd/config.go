@@ -27,11 +27,16 @@ func initConfig(cmd *cobra.Command) error {
 		return err
 	}
 
+	localMode, err := cmd.Flags().GetBool("local")
+	if err != nil {
+		return err
+	}
+
 	cfg = &config.Config{}
 	cfgPath := path.Join(home, "config.yaml")
 	_, err = os.Stat(cfgPath)
 	if err != nil {
-		err = config.CreateConfig(home, debug)
+		err = config.CreateConfig(home, debug, localMode)
 		if err != nil {
 			return err
 		}
