@@ -71,6 +71,7 @@ func Run(cfg *config.Config, home string) error {
 			fmt.Println(err)
 			return err
 		}
+
 		wg.Add(1)
 		go func(chainId string, ch <-chan coretypes.ResultEvent) {
 			for v := range ch {
@@ -134,6 +135,7 @@ func RunGRPCQuery(ctx context.Context, client *lensclient.ChainClient, method st
 	if err != nil {
 		return abcitypes.ResponseQuery{}, nil, err
 	}
+	fmt.Println("height parsed from GetHeightFromMetadata=", height)
 
 	prove, err := lensclient.GetProveFromMetadata(md)
 	if err != nil {
@@ -195,6 +197,11 @@ func doRequest(query Query) {
 	if err != nil {
 		panic(err)
 	}
+
+	// get latest client chain block height to use in LC update and proof
+	abciInfo, _ := client.RPCClient.ABCIInfo(ctx)
+	lastBlockHeight := abciInfo.Response.LastBlockHeight
+	fmt.Println("Latest block height on Gaia from ABCI: ", lastBlockHeight)
 
 	// submit tx to queue
 	submitClient := clients.GetForChainId(query.SourceChainId)
