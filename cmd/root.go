@@ -12,6 +12,7 @@ import (
 var (
 	homePath       string
 	overridenChain string
+	localMode      bool
 	debug          bool
 	cfg            *config.Config
 	defaultHome    = os.ExpandEnv("$HOME/.icq")
@@ -67,6 +68,12 @@ func init() {
 	// --home flag
 	rootCmd.PersistentFlags().StringVar(&homePath, flags.FlagHome, defaultHome, "set home directory")
 	if err := viper.BindPFlag(flags.FlagHome, rootCmd.PersistentFlags().Lookup(flags.FlagHome)); err != nil {
+		panic(err)
+	}
+
+	// --local flag
+	rootCmd.PersistentFlags().BoolVarP(&localMode, "local", "l", false, "local mode")
+	if err := viper.BindPFlag("local", rootCmd.PersistentFlags().Lookup("local")); err != nil {
 		panic(err)
 	}
 
