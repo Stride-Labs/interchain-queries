@@ -198,6 +198,7 @@ func doRequest(query Query) {
 		panic(err)
 	}
 
+	// get latest client chain block height to use in LC update and proof
 	abciInfo, _ := client.RPCClient.ABCIInfo(ctx)
 	lastBlockHeight := abciInfo.Response.LastBlockHeight
 	fmt.Println("Latest block height on Gaia from ABCI: ", lastBlockHeight)

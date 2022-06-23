@@ -109,7 +109,7 @@ func defaultConfig(keyHome string, debug bool, localMode bool) []byte {
 			"gaia-local":   client.GetGaiaLocalConfig(keyHome, debug),
 		}
 	} else {
-		defaultChain = "gaia-local"
+		defaultChain = "stride-testnet"
 		chains = map[string]*client.ChainClientConfig{
 			"stride-testnet": client.GetStrideTestnetConfig(keyHome, debug),
 			"gaia-testnet":   client.GetGaiaTestnetConfig(keyHome, debug),
