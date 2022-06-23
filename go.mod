@@ -10,7 +10,6 @@ require (
 	github.com/spf13/viper v1.11.0
 	github.com/strangelove-ventures/lens v0.4.0
 	github.com/tendermint/tendermint v0.34.19
-	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
 	google.golang.org/grpc v1.46.2
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -102,6 +101,7 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/zap v1.21.0 // indirect
+	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4 // indirect
 	golang.org/x/net v0.0.0-20220412020605-290c469a71a5 // indirect
 	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect

@@ -296,7 +296,7 @@ func doRequest(query Query) {
 
 	fmt.Println("ICQ RELAYER | query.Height=", query.Height)
 	fmt.Println("ICQ RELAYER | res.Height=", res.Height)
-	msg := &qstypes.MsgSubmitQueryResponse{ChainId: query.ChainId, QueryId: query.QueryId, Result: res.Value, Height: res.Height, ProofOps: res.ProofOps, FromAddress: submitClient.MustEncodeAccAddr(from)}
+	msg := &qstypes.MsgSubmitQueryResponse{ChainId: query.ChainId, QueryId: query.QueryId, Result: res.Value, Height: res.Height, FromAddress: submitClient.MustEncodeAccAddr(from)}
 	sendQueue[query.SourceChainId] <- msg
 }
 

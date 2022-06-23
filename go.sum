@@ -163,8 +163,6 @@ github.com/Shopify/sarama v1.19.0/go.mod h1:FVkBWblsNy7DGZRfXLU0O9RCGt5g3g3yEuWX
 github.com/Shopify/toxiproxy v2.1.4+incompatible/go.mod h1:OXgGpZ6Cli1/URJOF1DMxUHB2q5Ap20/P/eIdh4G0pI=
 github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
 github.com/StackExchange/wmi v1.2.1/go.mod h1:rcmrprowKIVzvc+NUiLncP2uuArMWLCbu9SBzvHz7e8=
-github.com/Stride-Labs/lens v0.0.21 h1:cy68fO9Rmkc9JS5eXHFf1K2P7Hl/s1t1fs1FRGxlB0c=
-github.com/Stride-Labs/lens v0.0.21/go.mod h1:nirhWsytziC3Mc25tHx566vnwaZkSTYB2mS+MhYqSzg=
 github.com/Stride-Labs/lens v0.0.22 h1:MJ6bhR08uImHglqsAn0nut0FjNiL4O4ybb3tdx3KHT4=
 github.com/Stride-Labs/lens v0.0.22/go.mod h1:nirhWsytziC3Mc25tHx566vnwaZkSTYB2mS+MhYqSzg=
 github.com/Stride-Labs/stride v0.0.2/go.mod h1:MxVPu8nouoD5Pnb22gDG4WGbT4Xcz4Wrl8TNBCwNy6g=
