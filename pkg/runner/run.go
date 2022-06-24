@@ -197,11 +197,10 @@ func doRequest(query Query) {
 	if err != nil {
 		panic(err)
 	}
-
 	// get latest client chain block height to use in LC update and proof
-	abciInfo, _ := client.RPCClient.ABCIInfo(ctx)
-	lastBlockHeight := abciInfo.Response.LastBlockHeight
-	fmt.Println("Latest block height on Gaia from ABCI: ", lastBlockHeight)
+	// abciInfo, _ := client.RPCClient.ABCIInfo(ctx)
+	// lastBlockHeight := abciInfo.Response.LastBlockHeight
+	// fmt.Println("Latest block height on Gaia from ABCI: ", lastBlockHeight)
 
 	// submit tx to queue
 	submitClient := clients.GetForChainId(query.SourceChainId)
@@ -241,7 +240,7 @@ func doRequest(query Query) {
 		}
 
 		trustedHeight := unpackedState.GetLatestHeight()
-		clientHeight, ok := trustedHeight.(clienttypes.Height)
+		clientHeight := trustedHeight.(clienttypes.Height)
 		if !ok {
 			fmt.Println("Error: Could coerce trusted height")
 			return
@@ -265,7 +264,7 @@ func doRequest(query Query) {
 			trustedValset = protoVal
 		} else {
 			fmt.Println("Fetching client update for height", "height", res.Height+1)
-			lightBlock2, err := retryLightblock(ctx, client, int64(clientHeight.RevisionHeight), 5)
+			lightBlock2, err := retryLightblock(ctx, client, int64(res.Height), 5)
 			if err != nil {
 				fmt.Println("Error: Could not fetch updated LC2 from chain - bailing: ", err) // requeue
 				return
@@ -303,7 +302,7 @@ func doRequest(query Query) {
 
 	fmt.Println("ICQ RELAYER | query.Height=", query.Height)
 	fmt.Println("ICQ RELAYER | res.Height=", res.Height)
-	msg := &qstypes.MsgSubmitQueryResponse{ChainId: query.ChainId, QueryId: query.QueryId, Result: res.Value, Height: res.Height, ProofOps: res.ProofOps, FromAddress: submitClient.MustEncodeAccAddr(from)}
+	msg := &qstypes.MsgSubmitQueryResponse{ChainId: query.ChainId, QueryId: query.QueryId, Result: res.Value, ProofOps: res.ProofOps, Height: res.Height, FromAddress: submitClient.MustEncodeAccAddr(from)}
 	sendQueue[query.SourceChainId] <- msg
 }
 
