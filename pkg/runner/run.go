@@ -206,19 +206,6 @@ func doRequest(query Query) {
 	submitClient := clients.GetForChainId(query.SourceChainId)
 	from, _ := submitClient.GetKeyAddress()
 	if pathParts[len(pathParts)-1] == "key" {
-		// update client
-		fmt.Println("Fetching client update for height", "height", res.Height+1)
-		lightBlock, err := retryLightblock(ctx, client, res.Height+1, 5)
-		if err != nil {
-			fmt.Println("Error: Could not fetch updated LC from chain - bailing: ", err) // requeue
-			return
-		}
-		valSet := tmtypes.NewValidatorSet(lightBlock.ValidatorSet.Validators)
-		protoVal, err := valSet.ToProto()
-		if err != nil {
-			fmt.Println("Error: Could not get valset from chain: ", err)
-			return
-		}
 
 		submitQuerier := lensquery.Query{Client: submitClient, Options: lensquery.DefaultOptions()}
 		connection, err := submitQuerier.Ibc_Connection(query.ConnectionId)
@@ -258,6 +245,22 @@ func doRequest(query Query) {
 		}
 
 		tmConsensus := unpackedConsensus.(*tmclient.ConsensusState)
+
+		//------------------------------------------------------
+
+		// update client
+		fmt.Println("Fetching client update for height", "height", res.Height+1)
+		lightBlock, err := retryLightblock(ctx, client, res.Height+1, 5)
+		if err != nil {
+			fmt.Println("Error: Could not fetch updated LC from chain - bailing: ", err) // requeue
+			return
+		}
+		valSet := tmtypes.NewValidatorSet(lightBlock.ValidatorSet.Validators)
+		protoVal, err := valSet.ToProto()
+		if err != nil {
+			fmt.Println("Error: Could not get valset from chain: ", err)
+			return
+		}
 
 		var trustedValset *tmproto.ValidatorSet
 		if bytes.Equal(valSet.Hash(), tmConsensus.NextValidatorsHash) {
