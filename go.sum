@@ -167,6 +167,7 @@ github.com/Stride-Labs/lens v0.0.21 h1:cy68fO9Rmkc9JS5eXHFf1K2P7Hl/s1t1fs1FRGxlB
 github.com/Stride-Labs/lens v0.0.21/go.mod h1:nirhWsytziC3Mc25tHx566vnwaZkSTYB2mS+MhYqSzg=
 github.com/Stride-Labs/lens v0.0.22 h1:MJ6bhR08uImHglqsAn0nut0FjNiL4O4ybb3tdx3KHT4=
 github.com/Stride-Labs/lens v0.0.22/go.mod h1:nirhWsytziC3Mc25tHx566vnwaZkSTYB2mS+MhYqSzg=
+github.com/Stride-Labs/lens v0.0.23/go.mod h1:nirhWsytziC3Mc25tHx566vnwaZkSTYB2mS+MhYqSzg=
 github.com/Stride-Labs/stride v0.0.2/go.mod h1:MxVPu8nouoD5Pnb22gDG4WGbT4Xcz4Wrl8TNBCwNy6g=
 github.com/Stride-Labs/stride v0.0.6 h1:5Aged/UWggh+eToGO7UQxzrfyMy9yTmfLqUW8hPYK/M=
 github.com/Stride-Labs/stride v0.0.6/go.mod h1:W/89BtERyBU2sI7YtaFwqsYGBadKSA6WdZXy36e67fs=
