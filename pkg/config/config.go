@@ -108,6 +108,7 @@ func defaultConfig(keyHome string, debug bool, localMode bool) []byte {
 			"stride-local": client.GetStrideLocalConfig(keyHome, debug),
 			"gaia-local":   client.GetGaiaLocalConfig(keyHome, debug),
 			"juno-local":   client.GetJunoLocalConfig(keyHome, debug),
+			"osmo-local":   client.GetOsmoLocalConfig(keyHome, debug),
 		}
 	} else {
 		defaultChain = "stride-testnet"
