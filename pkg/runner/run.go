@@ -211,37 +211,37 @@ func doRequest(query Query) {
 		connection, err := submitQuerier.Ibc_Connection(query.ConnectionId)
 		if err != nil {
 			fmt.Println("Error: Could not get connection from chain: ", err)
-			return
+			panic("Error: Could not fetch updated LC from chain - bailing")
 		}
 
 		clientId := connection.Connection.ClientId
 		state, err := submitQuerier.Ibc_ClientState(clientId) // pass in from request
 		if err != nil {
 			fmt.Println("Error: Could not get state from chain: ", err)
-			return
+			panic("Could not get state from chain")
 		}
 		unpackedState, err := clienttypes.UnpackClientState(state.ClientState)
 		if err != nil {
 			fmt.Println("Error: Could not unpack state from chain: ", err)
-			return
+			panic("Could not unpack state from chain")
 		}
 
 		trustedHeight := unpackedState.GetLatestHeight()
 		clientHeight := trustedHeight.(clienttypes.Height)
 		if !ok {
-			fmt.Println("Error: Could coerce trusted height")
-			return
+			fmt.Println("Error: Could not coerce trusted height")
+			panic("Error: Could coerce trusted height")
 		}
 
 		consensus, err := submitQuerier.Ibc_ConsensusState(clientId, clientHeight) // pass in from request
 		if err != nil {
 			fmt.Println("Error: Could not get consensus state from chain: ", err)
-			return
+			panic("Error: Could not get consensus state from chain: ")
 		}
 		unpackedConsensus, err := clienttypes.UnpackConsensusState(consensus.ConsensusState)
 		if err != nil {
 			fmt.Println("Error: Could not unpack consensus state from chain: ", err)
-			return
+			panic("Error: Could not unpack consensus state from chain: ")
 		}
 
 		tmConsensus := unpackedConsensus.(*tmclient.ConsensusState)
@@ -270,13 +270,13 @@ func doRequest(query Query) {
 			lightBlock2, err := retryLightblock(ctx, client, int64(res.Height), 5)
 			if err != nil {
 				fmt.Println("Error: Could not fetch updated LC2 from chain - bailing: ", err) // requeue
-				return
+				panic("Error: Could not fetch updated LC2 from chain - bailing: ")
 			}
 			valSet := tmtypes.NewValidatorSet(lightBlock2.ValidatorSet.Validators)
 			trustedValset, err = valSet.ToProto()
 			if err != nil {
 				fmt.Println("Error: Could not get valset2 from chain: ", err)
-				return
+				panic("Error: Could not get valset2 from chain: ")
 			}
 		}
 
@@ -290,7 +290,7 @@ func doRequest(query Query) {
 		anyHeader, err := clienttypes.PackHeader(header)
 		if err != nil {
 			fmt.Println("Error: Could not get pack header: ", err)
-			return
+			panic("Error: Could not get pack header: ")
 		}
 
 		msg := &clienttypes.MsgUpdateClient{
